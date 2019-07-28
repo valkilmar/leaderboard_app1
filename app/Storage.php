@@ -18,7 +18,8 @@ class Storage {
     
     private function __construct()
     {
-        $this->client = new Client(Utils::getConfig('redis'));
+        //$this->client = new Client(Utils::getConfig('redis'));
+        $this->client = new Client(getenv('OPENREDIS_URL'));
     }
     
     
