@@ -9,6 +9,7 @@ class Storage {
     const KEY_APP_STATUS = 'app_status';
     const KEY_APP_STORAGE = 'leaderboard';
     
+    
     // @var Storage
     private static $instance;
     
@@ -18,8 +19,7 @@ class Storage {
     
     private function __construct()
     {
-        //$this->client = new Client(Utils::getConfig('redis'));
-        $this->client = new Client(getenv('OPENREDIS_URL'));
+        $this->client = new Client(Utils::getConfig('redis'));
     }
     
     
@@ -130,5 +130,19 @@ class Storage {
     {
         $result = $this->client->get(self::KEY_APP_STATUS);
         return (is_numeric($result) ? (int)$result : null);
+    }
+    
+    
+    public function notifyDataChanged()
+    {
+        $response = [];
+        $data = $this->search();
+        if (!empty($data)) {
+            foreach($data as $key => $value) {
+                $response[$key] = (int)$value;
+            }
+        }
+        
+        $this->client->publish(Utils::getConfig('channel_pubsub'), json_encode($response));
     }
 }

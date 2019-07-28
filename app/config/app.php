@@ -1,6 +1,7 @@
 <?php
 
 return [
+    /*
     'redis' => [
         'scheme'   => 'tcp',
         'host'     => '127.0.0.1',
@@ -8,6 +9,8 @@ return [
         'password' => null,
         'database' => 0
     ],
+    */
+    'redis' => getenv('OPENREDIS_URL'),
     
     'api_key_randomizer' => 'e48933c4-c3d1-4ddb-9471-c11470c6e25e',
     
@@ -24,5 +27,7 @@ return [
         'Frank' => 0
     ],
     
-    'player_update_max_value' => 10
+    'player_update_max_value' => 10,
+    
+    'channel_pubsub' => 'channel_pubsub',
 ];

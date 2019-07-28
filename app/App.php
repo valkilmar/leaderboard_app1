@@ -76,6 +76,8 @@ class App {
     {
         Storage::getInstance()->setApplicationStatus(self::STATUS_APP_STOPPED);
         Storage::getInstance()->feedData(Utils::getConfig('players'), true);
+        
+        Storage::getInstance()->notifyDataChanged();
     }
     
     
@@ -97,6 +99,8 @@ class App {
                 $player->save();
             }
         }
+        
+        Storage::getInstance()->notifyDataChanged();
     }
     
     
