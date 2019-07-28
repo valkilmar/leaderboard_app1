@@ -1,0 +1,12 @@
+{
+    "require": {
+        "cboden/ratchet": "^0.4.1",
+        "predis/predis": "^1.1"
+    },
+    
+    "autoload": {
+        "psr-4": {
+            "AppVal\\": "app"
+        }
+    }
+}
