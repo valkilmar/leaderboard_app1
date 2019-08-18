@@ -47,6 +47,11 @@ class App {
                 $page = (int)Utils::getValue($_GET, 'page', 1);
                 $limit = (int)Utils::getValue($_GET, 'limit', 10);
 
+                $totalPlayes = Player::getTotalCount();
+                if ($totalPlayes < 1) {
+                    Player::resetAll();
+                }
+
                 $response = json_encode([
                     'leaderboard' => Player::getList($page, $limit, false),
                     'total' => Player::getTotalCount()
