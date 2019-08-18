@@ -118,8 +118,8 @@ class Player {
             $limit = rand(Utils::getConfig('player_update_min_count'), Utils::getConfig('player_update_max_count'));
         }
         
-        // $scores = Randomizer::getIntegers($limit, Utils::getConfig('player_update_min_value'), Utils::getConfig('player_update_max_value'), false);
-        $scores = Randomizer::getIntegersLocal($limit, Utils::getConfig('player_update_min_value'), Utils::getConfig('player_update_max_value'), false);
+        $scores = Randomizer::getIntegers($limit, Utils::getConfig('player_update_min_value'), Utils::getConfig('player_update_max_value'), false);
+        // $scores = Randomizer::getIntegersLocal($limit, Utils::getConfig('player_update_min_value'), Utils::getConfig('player_update_max_value'), false);
 
         $updated = [];
 

@@ -2,15 +2,7 @@
 
 return [
     
-    'redis' => [
-        'scheme'   => 'tcp',
-        'host'     => '127.0.0.1',
-        'port'     => 6379,
-        'password' => null,
-        'database' => 0
-    ],
-    
-    //'redis' => getenv('OPENREDIS_URL'),
+    'redis' => getenv('REDIS_URL'),
 
     'storage_key_leaderboard' => 'leaderboard',
 
