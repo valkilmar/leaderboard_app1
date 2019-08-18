@@ -6,10 +6,6 @@ use Predis\Client;
 
 class Storage {
     
-    const KEY_APP_STATUS = 'app_status';
-    const KEY_APP_STORAGE = 'leaderboard';
-    
-    
     // @var Storage
     private static $instance;
     
@@ -43,7 +39,7 @@ class Storage {
      */
     public function store($key, $value)
     {
-        $this->client->zadd(self::KEY_APP_STORAGE, [$key => $value] );
+        $this->client->zadd(Utils::getConfig('storage_key_leaderboard'), [$key => $value] );
     }
     
     
@@ -53,7 +49,7 @@ class Storage {
      */
     public function remove($key)
     {
-        $this->client->zrem(self::KEY_APP_STORAGE, $key);
+        $this->client->zrem(Utils::getConfig('storage_key_leaderboard'), $key);
     }
     
     
@@ -96,22 +92,30 @@ class Storage {
      */
     public function findByKey($key)
     {
-        $result = $this->client->zscore(self::KEY_APP_STORAGE, $key);
+        $result = $this->client->zscore(Utils::getConfig('storage_key_leaderboard'), $key);
         return $result;
     }
     
     /**
+     * Search in players database
      * 
      * @param int $page
-     * @param int $pageNum
+     * @param int $limit
+     * @param int $extendRange
      * @return array
      */
-    public function search($page = 1, $pageNum = -1)
+    public function search($page = 1, $limit = -1, $extendRange = 0)
     {
-        $startIndex = $page - 1;
-        $endIndex = ($pageNum > 0) ? $startIndex + $pageNum : -1;
+        if ($limit < 0) {
+            $startIndex = 0;
+            $endIndex = -1;
+        } else {
+            $startIndex = ($page - 1) * $limit;
+            $endIndex = $startIndex + $limit - 1 + $extendRange;
+        }
+
         $result = $this->client->zRevRange(
-                self::KEY_APP_STORAGE,
+                Utils::getConfig('storage_key_leaderboard'),
                 $startIndex,
                 $endIndex,
                 ['withscores' => true]);
@@ -119,30 +123,72 @@ class Storage {
         return $result;
     }
     
-    
+    /**
+     * Set Application status
+     * 
+     * @param string $status
+     */
     public function setApplicationStatus($status)
     {
-        $this->client->set(self::KEY_APP_STATUS, $status);
+        $this->client->set(Utils::getConfig('storage_key_app_status'), $status);
     }
     
     
+    /**
+     * Get current Application status
+     * 
+     */
     public function getApplicationStatus()
     {
-        $result = $this->client->get(self::KEY_APP_STATUS);
+        $result = $this->client->get(Utils::getConfig('storage_key_app_status'));
         return (is_numeric($result) ? (int)$result : null);
     }
     
     
-    public function notifyDataChanged()
+    /**
+     * Notify subscribers that Players Leaderboard has changed
+     * 
+     * @param string $status
+     */
+    public function notifyLeaderboardChanged($message)
     {
+        if (!is_string($message)) {
+            $message = json_encode($message);
+        }
+        $this->client->publish(Utils::getConfig('channel_leaderboard'), $message);
+    }
+
+
+    /**
+     * Returns total count of items in leaderboard set
+     * 
+     */
+    public function countItems() {
+        return $this->client->zCount(Utils::getConfig('storage_key_leaderboard'), 0, PHP_INT_MAX);
+    }
+
+
+    /**
+     * Returns data for $maxCount items, using pseudo random generated indexes
+     * 
+     * @param int $maxCount
+     * @param int $minPlayerIndex
+     * @param int $maxPlayerIndex
+     */
+    public function getRandomItems($maxCount, $minPlayerIndex, $manPlayerIndex) {
+
         $response = [];
-        $data = $this->search();
-        if (!empty($data)) {
-            foreach($data as $key => $value) {
-                $response[$key] = (int)$value;
+        
+        for ($i = 0; $i < $maxCount; $i++) {
+            $index = rand($minPlayerIndex, $maxPlayerIndex);
+            $result = $this->client->zrange(Utils::getConfig('storage_key_leaderboard'), $index, $index, ['withscores' => true]);
+            if (!empty($result)) {
+                foreach($result as $k => $v) {
+                    $response[$k] = $v;
+                }
             }
         }
-        
-        $this->client->publish(Utils::getConfig('channel_pubsub'), json_encode($response));
+
+        return $response;
     }
 }

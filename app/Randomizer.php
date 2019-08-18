@@ -77,4 +77,20 @@ class Randomizer {
         
         return $result;
     }
+
+
+    public static function getIntegersLocal($countNumbers, $minValue, $maxValue, $uniqueValues = true)
+    {
+        $response = [];
+        
+        while ((count($response) < $countNumbers)) {
+            $number = rand($minValue, $maxValue);
+            if ($uniqueValues && in_array($number, $response)) {
+                continue;
+            }
+            $response[] = $number;
+        }
+
+        return $response;
+    }
 }
