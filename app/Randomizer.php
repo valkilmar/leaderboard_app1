@@ -26,8 +26,7 @@ class Randomizer {
             "max" =>  $maxValue,
             "replacement" => !$uniqueValues,
             "base" => 10
-        ]);
-        
+        ]);        
         
         if (empty($result)) {
             return null;

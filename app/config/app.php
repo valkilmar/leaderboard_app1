@@ -2,7 +2,7 @@
 
 return [
     
-    'redis' => getenv('REDIS_URL'),
+    //  'redis' => getenv('REDIS_URL'),
 
     'storage_key_leaderboard' => 'leaderboard',
 
