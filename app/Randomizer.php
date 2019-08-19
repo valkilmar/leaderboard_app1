@@ -20,21 +20,28 @@ class Randomizer {
     public static function getIntegers($countNumbers, $minValue, $maxValue, $uniqueValues = true)
     {
         
-        $result = self::apiRequest('generateIntegers', [
-            "n" => $countNumbers,
-            "min" => $minValue,
-            "max" =>  $maxValue,
-            "replacement" => !$uniqueValues,
-            "base" => 10
-        ]);        
-        
-        if (empty($result)) {
-            return null;
+        $randomizerKeys = Utils::getConfig('api_key_randomizer');
+        foreach($randomizerKeys as $apiKey) {
+            $result = self::apiRequest($apiKey, 'generateIntegers', [
+                "n" => $countNumbers,
+                "min" => $minValue,
+                "max" =>  $maxValue,
+                "replacement" => !$uniqueValues,
+                "base" => 10
+            ]);
+
+            if (empty($result)) {
+                continue;
+            }
+
+            $result = json_decode($result, true);
+
+            if (!empty($result['result']['random']['data'])) {
+                return $result['result']['random']['data'];
+            }
         }
-        
-        $result = json_decode($result, true);
-        
-        return Utils::getValue($result, 'result.random.data');
+
+        return self::getIntegersLocal($countNumbers, $minValue, $maxValue, $uniqueValues);
     }
     
     
@@ -44,9 +51,9 @@ class Randomizer {
      * @param array $params
      * @return string
      */
-    private static function apiRequest($method, $params)
+    private static function apiRequest($apiKey, $method, $params)
     {
-        $params['apiKey'] = Utils::getConfig('api_key_randomizer');
+        $params['apiKey'] = $apiKey;
         
         $message = json_encode([
             "jsonrpc" => "2.0",

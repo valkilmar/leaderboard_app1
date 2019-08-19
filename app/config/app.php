@@ -8,7 +8,11 @@ return [
 
     'storage_key_app_status' => 'app_status',
     
-    'api_key_randomizer' => 'e48933c4-c3d1-4ddb-9471-c11470c6e25e',
+    'api_key_randomizer' => [
+        //'e48933c4-c3d1-4ddb-9471-c11470c6e25e',
+        '793d0d05-4f89-4c29-8b72-472b655a67a3',
+        '7d21012e-373c-4323-9104-1fea8dbd79dc'
+    ],
 
     'player_update_min_value' => -10, // Min update value the player's score per poll
     
