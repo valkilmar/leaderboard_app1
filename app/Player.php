@@ -118,15 +118,17 @@ class Player {
             $limit = rand(Utils::getConfig('player_update_min_count'), Utils::getConfig('player_update_max_count'));
         }
         
+
+
+        // Get random numbers to update player scores
         $scores = Randomizer::getIntegers($limit, Utils::getConfig('player_update_min_value'), Utils::getConfig('player_update_max_value'), false);
 
-        $updated = [];
-
+        
         // Continuous set of players
         $players = self::getList($page, $limit, true, 5);
 
         $index = 0;
-        $totalScores = count($scores);
+        $totalScores = count($scores) ;
         
         foreach($players as $player) {
             
