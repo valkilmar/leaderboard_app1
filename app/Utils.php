@@ -58,4 +58,10 @@ class Utils {
             return $default;
         }
     }
+
+    
+    // Test function, no params
+    public static function test1() {
+
+    }
 }
